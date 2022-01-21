@@ -1,0 +1,41 @@
+## PD调度常见问题
+- 1.集群TiKV节点数量没有变化，但逐渐出现若干个TiKV占用空间或者Leader数量高于其他节点的情况
+- 2.上线了一个TiKV节点，但是Leader transfer和Region Balance速度非常慢
+- 3.通过什么方式，能够加速TiKV节点的缩容
+- 4.大表Truncate后，产生的大量empty region需要人工介入处理吗？
+
+## 常见的调度类型
+1. Balance
+	1. leader
+	2. region
+2. Hot region
+	1. 写热点
+	2. 读热点
+3. 集群拓扑
+4. Region merge
+
+## 调度的控制——产生速度控制
+|参数|默认值|说明|
+|:-:|:-:|:-:|
+|region-schedule-limit|2048|同时进行Region调度的任务个数|
+|leader-schedule-limit|4|同时进行leader调度的任务个数|
+|replica-schedule-limit|64|同时进行replica调度的任务个数|
+|merge-schedule-limit|8|同时进行的Region Merge调度的任务，设置为0则关闭Region Merge|
+|hot-region-schedule-limit|4|控制同时进行的hot Region任务。该配置项独立于Region调度。|
+
+## 调度的控制——消费速度控制
+- 消费限速- store limit
+	- 定义：限制单个store的消费速度
+	- 方式：pd-ctl -u ip:port store limit <id> <value>
+	- 区别：Store Limit 限制的主要是operator的消费速度，而其他的limit主要是限制operator的产生速度。
+
+## PD调度典型场景
+- Leader/Region 分布不均衡
+- TiKV节点下线速度慢
+- TiKV节点上线速度慢
+- 热点Region分布不均衡
+- Region Merge速度慢
+
+### Leader/Region分布不均衡
+- Grafana PD --> Statistics - balance 页面展示了负载均衡相关统计
+- pd-ctl ：查询Store的得分，数量，剩余空间和weight
