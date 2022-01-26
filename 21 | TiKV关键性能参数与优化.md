@@ -1,5 +1,4 @@
 # 21 | TiKV关键性能参数与优化
-[TOC]
 ## TiKV数据写入流程
 ![](https://s3.bmp.ovh/imgs/2022/01/2f0ce6d414770b3a.jpg)
 
